@@ -30,6 +30,9 @@ without use: if `scripts/sql.mjs` says "Database is possibly not accessible", re
   where_to_watch, source (who recommended / where from), url, note, poster_url (Wikimedia image link), photos[]
   (her screenshots, storage paths), rating **1–10**, impression, watched_on, length `short|medium|long`, runtime (min),
   moods[] (`light|cry|think|scary`; empty = guessed from genres by `moodsOf`), wikidata (Q-id), wiki_url.
+- Series matter to her: a book's `series` name must be identical across its books (that is how they link). Cards show
+  📚 n/total and the series name, lists keep a series together in order, the book page has a series block linking the
+  others. Always fill series + series_no when adding a series book; look up Ukrainian titles/editions on the web.
 - Books are rows with kind `book` plus author, series, series_no, pages, ol_key (Open Library work key). The app has two
   sections (switch in the header, remembered per device): 🎬 Кіно and 📚 Книги; the same statuses get book labels
   (`sk(section, key)` reads `book.<key>` from the locales for books). Ukrainian book titles are kept as she gives them;
