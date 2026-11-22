@@ -44,7 +44,8 @@ User-Agent, go one film at a time with pauses; `api()` retries with Retry-After.
 ## Owner's way of using it
 
 She sends film names in chat ("додай X в хочу подивитись"); Claude adds them: look up with `byId`/`searchTitles` from a
-node script (see git history 2026-11-22 for the pattern) and insert with SQL, or she adds them herself in the app.
+node script (`node --experimental-strip-types` importing `src/wiki.ts`, with `globalThis.fetch` wrapped to send a
+User-Agent) and insert with SQL using her user id, or she adds them herself in the app.
 She does NOT want a "recommend to friends" section (dropped 2026-11-22); "Watched" with rating sort/filter replaces it.
 
 ## Code
