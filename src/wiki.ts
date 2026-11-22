@@ -150,7 +150,8 @@ async function build(list: Entity[], limit = 99): Promise<Found[]> {
     const runtime = runtimeOf(e)
     const uk = e.labels?.uk?.value, en = e.labels?.en?.value
     const original = (values(e, 'P1476')[0] as { text: string } | undefined)?.text ?? en ?? null
-    const title = uk ?? en ?? original ?? e.id
+    // Wikipedia-style disambiguation is not part of the name: "Stolen (film, 2025)" -> "Stolen"
+    const title = (uk ?? en ?? original ?? e.id).replace(/\s*\([^)]*\)\s*$/, '')
     const wiki = e.sitelinks?.ukwiki ? ['uk', e.sitelinks.ukwiki.title] : e.sitelinks?.enwiki ? ['en', e.sitelinks.enwiki.title] : null
     return {
       wikidata: e.id, title, kind, runtime,
