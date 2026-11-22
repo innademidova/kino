@@ -140,7 +140,12 @@
     "author": "Author",
     "series": "Series",
     "seriesNo": "Number in series",
-    "pages": "Pages"
+    "pages": "Pages",
+    "bookOf": "book {{n}} of {{total}}",
+    "seriesTitle": "Series: {{name}}",
+    "seriesCount_one": "{{count}} book in the list",
+    "seriesCount_other": "{{count}} books in the list",
+    "thisBook": "this book"
   },
   "add": {
     "title": "Add",

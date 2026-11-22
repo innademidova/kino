@@ -6,16 +6,18 @@ import {
 import { useStore } from './store'
 import { AutoField, ConfirmDelete, Icon, LinkChip, PhotoGrid, Poster, Segmented, Stars, go } from './ui'
 import { fromFound, LookupSheet } from './Add'
+import { seriesPlace } from './Lists'
 
 const toggle = (list: string[], v: string) => (list.includes(v) ? list.filter(x => x !== v) : [...list, v])
 
 export function ItemPage({ item }: { item: Item }) {
-  const { updateItem, deleteItem } = useStore()
+  const { items, updateItem, deleteItem } = useStore()
   const [lookup, setLookup] = useState(false)
   const [error, setError] = useState('')
   const save = (patch: Partial<Item>) => updateItem(item.id, patch).catch(e => setError((e as Error).message))
   const back = () => (history.length > 1 ? history.back() : go(item.status === 'want' ? '#/' : '#/' + item.status))
-  const seriesLine = item.series ? `${item.series}${item.series_no ? ', ' + t('item.bookNo', { n: item.series_no }) : ''}` : ''
+  const place = seriesPlace(items, item)
+  const seriesLine = item.series && place ? `${item.series}${place.n ? ' · ' + t('item.bookOf', { n: place.n, total: place.total }) : ''}` : ''
   const mood = moodsOf(item)
   const untitled = item.title === t('item.untitled')
   const section = sectionOf(item)
@@ -41,8 +43,9 @@ export function ItemPage({ item }: { item: Item }) {
             <AutoField className="title-input" value={untitled ? '' : item.title} placeholder={t('item.titlePlaceholder')} onSave={v => save({ title: v ?? t('item.untitled') })} />
             {item.original_title && <p className="muted">{item.original_title}</p>}
             {book && item.author && <p className="item-meta">{item.author}</p>}
+            {seriesLine && <button type="button" className="series-line link-btn" onClick={() => document.getElementById('series')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}>📚 {seriesLine}</button>}
             <p className={book ? 'small muted' : 'item-meta'}>
-              {(book ? [seriesLine, item.year, item.pages && t('item.pagesN', { n: item.pages })]
+              {(book ? [item.year, item.pages && t('item.pagesN', { n: item.pages })]
                 : [item.year, KIND_EMOJI[item.kind] + ' ' + t('kind.' + item.kind), formatRuntime(item.runtime)]).filter(Boolean).join(' · ')}
             </p>
             {item.genres.length > 0 && <p className="small muted">{item.genres.map(g => t('genre.' + g)).join(', ')}</p>}
@@ -68,6 +71,30 @@ export function ItemPage({ item }: { item: Item }) {
             <label className="field inline"><span>{t(sk(section, 'item.watchedOn'))}</span>
               <input type="date" value={item.watched_on ?? ''} onChange={e => save({ watched_on: e.target.value || null })} />
             </label>
+          </div>
+        )}
+
+        {place && place.all.length > 1 && (
+          <div className="card stack series-card" id="series">
+            <div>
+              <h4>📚 {t('item.seriesTitle', { name: item.series ?? '' })}</h4>
+              <p className="small muted">{t('item.seriesCount', { count: place.all.length })}</p>
+            </div>
+            <div className="series-row">
+              {place.all.map(x => {
+                const here = x.id === item.id
+                const inner = <>
+                  <Poster item={x} className="series-cover">
+                    {x.status === 'watched' && <span className="cover-pills"><span className="pill glass">✓{x.rating ? ' ★ ' + x.rating : ''}</span></span>}
+                  </Poster>
+                  <span className="small"><b>{x.series_no ? `${x.series_no}. ` : ''}</b>{x.title}</span>
+                  {here && <span className="small muted">{t('item.thisBook')}</span>}
+                </>
+                return here
+                  ? <div key={x.id} className="series-book here">{inner}</div>
+                  : <a key={x.id} className="series-book" href={`#/i/${x.id}`} onClick={e => { e.preventDefault(); location.replace(`#/i/${x.id}`); scrollTo(0, 0) }}>{inner}</a>
+              })}
+            </div>
           </div>
         )}
 

@@ -140,7 +140,14 @@
     "author": "Автор",
     "series": "Серія",
     "seriesNo": "Номер у серії",
-    "pages": "Сторінок"
+    "pages": "Сторінок",
+    "bookOf": "книга {{n}} з {{total}}",
+    "seriesTitle": "Серія «{{name}}»",
+    "seriesCount_one": "{{count}} книга у списку",
+    "seriesCount_few": "{{count}} книги у списку",
+    "seriesCount_many": "{{count}} книг у списку",
+    "seriesCount_other": "{{count}} книги у списку",
+    "thisBook": "ця книга"
   },
   "add": {
     "title": "Додати",

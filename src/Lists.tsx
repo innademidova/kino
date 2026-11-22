@@ -1,13 +1,24 @@
 import { useMemo, useState } from 'react'
 import { t } from './i18n'
-import { GENRES, KIND_EMOJI, sectionOf, sk, type Item, type Kind, type Section, type Status } from './lib'
+import { GENRES, KIND_EMOJI, sectionOf, seriesBooks, sk, type Item, type Kind, type Section, type Status } from './lib'
 import { useStore } from './store'
 import { Icon, Poster } from './ui'
 
+// "book 2 of 3": the total is the larger of her books in the series and the highest number
+export function seriesPlace(items: Item[], item: Item) {
+  const all = seriesBooks(items, item)
+  if (!all.length) return null
+  const total = Math.max(all.length, ...all.map(x => x.series_no ?? 0))
+  return { all, total, n: item.series_no }
+}
+
 export function ItemCard({ item }: { item: Item }) {
+  const { items } = useStore()
+  const place = item.kind === 'book' ? seriesPlace(items, item) : null
   return (
     <a className="film-card" href={`#/i/${item.id}`}>
       <Poster item={item}>
+        {place && <span className="series-pill pill glass">📚 {place.n ? `${place.n}/${place.total}` : place.total}</span>}
         <span className="cover-pills">
           {item.favorite && <span className="pill glass">❤️</span>}
           {item.rewatch && item.status !== 'watched' && <span className="pill glass">🔁</span>}
@@ -16,8 +27,9 @@ export function ItemCard({ item }: { item: Item }) {
       </Poster>
       <div className="film-card-body">
         <b>{item.title}</b>
+        {place && <span className="series-line small">📚 {item.series}{place.n ? ` · ${t('item.bookOf', { n: place.n, total: place.total })}` : ''}</span>}
         <span className="muted small">{(item.kind === 'book'
-          ? [item.author, item.series_no && `#${item.series_no}`]
+          ? [item.author]
           : [item.year, KIND_EMOJI[item.kind] + ' ' + t('kind.' + item.kind), item.where_to_watch]).filter(Boolean).join(' · ')}</span>
       </div>
     </a>

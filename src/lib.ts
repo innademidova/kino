@@ -223,3 +223,11 @@ export function moodsOf(item: Pick<Item, 'moods' | 'genres'>) {
   if (out.has('light') && g.includes('comedy')) out.delete('cry')
   return { moods: [...out], guessed: true }
 }
+
+// Books of the same series in her list, in reading order
+export function seriesBooks(items: Item[], item: Item): Item[] {
+  const name = item.series?.trim().toLowerCase()
+  if (item.kind !== 'book' || !name) return []
+  return items.filter(x => x.kind === 'book' && x.series?.trim().toLowerCase() === name)
+    .sort((a, b) => (a.series_no ?? 99) - (b.series_no ?? 99) || a.title.localeCompare(b.title))
+}
