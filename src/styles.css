@@ -267,3 +267,6 @@ div.loading { background: var(--soft); }
 /* ---------- today ---------- */
 .roll { padding: 14px 22px; font-size: 16px; }
 .pick-card { max-width: 220px; }
+.two > :nth-child(3) { grid-column: 1 / -1; }
+.section-switch { flex: none; }
+.section-switch button { padding: 7px 11px; font-size: 13px; }

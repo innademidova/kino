@@ -46,3 +46,13 @@ drop policy if exists "watch own folder" on storage.objects;
 create policy "watch own folder" on storage.objects for all to authenticated
   using (bucket_id = 'watch' and (storage.foldername(name))[1] = auth.uid()::text)
   with check (bucket_id = 'watch' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- 2026-11-22: books live in the same table (kind 'book'), shown in their own "Books" section.
+-- Book covers and details come from Open Library (free, no key).
+alter table watch_items drop constraint if exists watch_items_kind_check;
+alter table watch_items add constraint watch_items_kind_check check (kind in ('film', 'series', 'book'));
+alter table watch_items add column if not exists author text;
+alter table watch_items add column if not exists series text;
+alter table watch_items add column if not exists series_no smallint;
+alter table watch_items add column if not exists pages smallint;
+alter table watch_items add column if not exists ol_key text;

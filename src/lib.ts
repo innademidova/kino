@@ -7,7 +7,12 @@ export const supabase = createClient(
   'sb_publishable_cwDfk3jZoFSZAnyAsO2kjQ_zmUNoXog',
 )
 
-export type Kind = 'film' | 'series'
+export type Kind = 'film' | 'series' | 'book'
+// Two sections of the app: films and series, and books
+export type Section = 'kino' | 'books'
+export const sectionOf = (item: { kind: Kind }): Section => (item.kind === 'book' ? 'books' : 'kino')
+// Labels that differ between sections: tab.want (films) vs book.tab.want (books)
+export const sk = (section: Section, key: string) => (section === 'books' ? 'book.' + key : key)
 export type Status = 'want' | 'watching' | 'watched'
 export type Length = 'short' | 'medium' | 'long'
 export const STATUSES: Status[] = ['want', 'watching', 'watched']
@@ -17,7 +22,7 @@ export const GENRES = ['drama', 'comedy', 'romance', 'scifi', 'thriller', 'horro
 export type Genre = typeof GENRES[number]
 export const MOODS = ['light', 'cry', 'think', 'scary'] as const
 export const MOOD_EMOJI: Record<string, string> = { light: '☀️', cry: '😭', think: '🤔', scary: '😱' }
-export const KIND_EMOJI: Record<Kind, string> = { film: '🎬', series: '📺' }
+export const KIND_EMOJI: Record<Kind, string> = { film: '🎬', series: '📺', book: '📚' }
 // Suggestions for "where to watch" (free text, these are just quick picks)
 export const SERVICES = ['Netflix', 'Megogo', 'Sweet.tv', 'Kyivstar TV', 'Prime Video', 'Apple TV+', 'Disney+', 'HBO Max', 'YouTube']
 
@@ -44,6 +49,11 @@ export type Item = {
   moods: string[]
   wikidata: string | null
   wiki_url: string | null
+  author: string | null
+  series: string | null
+  series_no: number | null
+  pages: number | null
+  ol_key: string | null
   watched_on: string | null
   created_at: string
   updated_at: string

@@ -27,6 +27,11 @@ export type Found = {
   poster_url: string | null
   wiki_url: string | null
   description: string
+  // books only
+  author?: string | null
+  pages?: number | null
+  series?: string | null
+  series_no?: number | null
 }
 
 const FILM = new Set(['Q11424', 'Q24862', 'Q506240', 'Q202866', 'Q93204', 'Q229390', 'Q24869', 'Q17517379', 'Q20650540'])

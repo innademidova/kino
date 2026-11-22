@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "My movies"
+    "name": "My movies & books"
   },
   "languages": {
     "uk": "Українська",
@@ -31,7 +31,8 @@
   },
   "link": {
     "web": "Link",
-    "wiki": "Wikipedia"
+    "wiki": "Wikipedia",
+    "openLibrary": "Open Library"
   },
   "tab": {
     "want": "Want to watch",
@@ -104,6 +105,11 @@
       "short": "short",
       "medium": "medium",
       "long": "long"
+    },
+    "book": {
+      "short": "under 250 pages",
+      "medium": "250–450 pages",
+      "long": "a thick one"
     }
   },
   "item": {
@@ -128,7 +134,13 @@
     "removePoster": "Remove poster (show my screenshot)",
     "added": "Added {{date}}",
     "hm": "{{h}} h {{m}} min",
-    "m": "{{m}} min"
+    "m": "{{m}} min",
+    "bookNo": "book {{n}}",
+    "pagesN": "{{n}} pages",
+    "author": "Author",
+    "series": "Series",
+    "seriesNo": "Number in series",
+    "pages": "Pages"
   },
   "add": {
     "title": "Add",
@@ -164,5 +176,60 @@
     "install": "To add it to your phone's home screen: in Safari tap Share → Add to Home Screen.",
     "posters": "Posters, years and genres come from Wikipedia (free).",
     "signOut": "Sign out"
+  },
+  "section": {
+    "kino": "🎬 Movies",
+    "books": "📚 Books"
+  },
+  "book": {
+    "tab": {
+      "want": "Want to read",
+      "watching": "Reading",
+      "watched": "Read",
+      "today": "What to read?"
+    },
+    "add": {
+      "title": "Add a book",
+      "placeholder": "Title or author",
+      "searching": "Searching Open Library…",
+      "pickHint": "Tap the right book and its cover, author and series fill in. Ukrainian titles are often missing there: then save it as is."
+    },
+    "lookup": {
+      "title": "Find a cover",
+      "hint": "Fills in the cover, author, year and series (usually from the original edition). Your notes and rating stay.",
+      "again": "Different cover / data",
+      "button": "Find cover and details"
+    },
+    "list": {
+      "empty": {
+        "want": "Books you want to read go here.",
+        "watching": "Books you are reading now.",
+        "watched": "Books you have read, with your ratings."
+      }
+    },
+    "sort": {
+      "rating": "Highest rated first",
+      "recent": "Most recent first",
+      "title": "By title and series",
+      "year": "Newest books first"
+    },
+    "item": {
+      "watchedOn": "Finished on",
+      "where": "Where to get it",
+      "wherePlaceholder": "Paper, Kindle, library…",
+      "rewatch": "Read it, want to reread"
+    },
+    "today": {
+      "empty": "Add something to “Want to read” first.",
+      "what": "How many pages",
+      "picked": "Next read"
+    },
+    "length": {
+      "any": {
+        "short": "thin",
+        "medium": "medium",
+        "long": "thick"
+      }
+    }
   }
 }

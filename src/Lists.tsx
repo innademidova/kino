@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { t } from './i18n'
-import { GENRES, KIND_EMOJI, type Item, type Kind, type Status } from './lib'
+import { GENRES, KIND_EMOJI, sectionOf, sk, type Item, type Kind, type Section, type Status } from './lib'
 import { useStore } from './store'
 import { Icon, Poster } from './ui'
 
@@ -16,7 +16,9 @@ export function ItemCard({ item }: { item: Item }) {
       </Poster>
       <div className="film-card-body">
         <b>{item.title}</b>
-        <span className="muted small">{[item.year, KIND_EMOJI[item.kind] + ' ' + t('kind.' + item.kind), item.where_to_watch].filter(Boolean).join(' · ')}</span>
+        <span className="muted small">{(item.kind === 'book'
+          ? [item.author, item.series_no && `#${item.series_no}`]
+          : [item.year, KIND_EMOJI[item.kind] + ' ' + t('kind.' + item.kind), item.where_to_watch]).filter(Boolean).join(' · ')}</span>
       </div>
     </a>
   )
@@ -31,9 +33,9 @@ export function genresIn(items: Item[]) {
   return GENRES.filter(g => n.has(g)).sort((a, b) => n.get(b)! - n.get(a)!)
 }
 
-export function ListScreen({ status, onAdd }: { status: Status; onAdd: () => void }) {
+export function ListScreen({ status, section, onAdd }: { status: Status; section: Section; onAdd: () => void }) {
   const { items } = useStore()
-  const mine = items.filter(x => x.status === status)
+  const mine = items.filter(x => x.status === status && sectionOf(x) === section)
   const [query, setQuery] = useState('')
   const [genre, setGenre] = useState<string | null>(null)
   const [kind, setKind] = useState<Kind | null>(null)
@@ -45,13 +47,14 @@ export function ListScreen({ status, onAdd }: { status: Status; onAdd: () => voi
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = mine.filter(x =>
-      (!q || [x.title, x.original_title, x.note, x.source].some(s => s?.toLowerCase().includes(q))) &&
+      (!q || [x.title, x.original_title, x.author, x.series, x.note, x.source].some(s => s?.toLowerCase().includes(q))) &&
       (!genre || x.genres.includes(genre)) && (!kind || x.kind === kind) &&
       (!minRating || (x.rating ?? 0) >= minRating) && (!fav || x.favorite))
     const by: Record<Sort, (a: Item, b: Item) => number> = {
       rating: (a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.watched_on ?? '').localeCompare(a.watched_on ?? ''),
       recent: (a, b) => watched ? (b.watched_on ?? b.updated_at).localeCompare(a.watched_on ?? a.updated_at) : b.created_at.localeCompare(a.created_at),
-      title: (a, b) => a.title.localeCompare(b.title),
+      // Books of one series stay together and in order
+      title: (a, b) => (a.series ?? a.title).localeCompare(b.series ?? b.title) || (a.series_no ?? 0) - (b.series_no ?? 0) || a.title.localeCompare(b.title),
       year: (a, b) => (b.year ?? 0) - (a.year ?? 0),
     }
     return list.sort(by[sort])
@@ -60,9 +63,9 @@ export function ListScreen({ status, onAdd }: { status: Status; onAdd: () => voi
   if (mine.length === 0) return (
     <div className="content">
       <div className="empty-big">
-        <div className="empty-mark">{status === 'want' ? '🍿' : status === 'watching' ? '📺' : '🎞️'}</div>
-        <p>{t('list.empty.' + status)}</p>
-        <button className="btn primary" onClick={onAdd}><Icon name="plus" size={18} />{t('add.title')}</button>
+        <div className="empty-mark">{section === 'books' ? '📚' : status === 'want' ? '🍿' : status === 'watching' ? '📺' : '🎞️'}</div>
+        <p>{t(sk(section, 'list.empty.' + status))}</p>
+        <button className="btn primary" onClick={onAdd}><Icon name="plus" size={18} />{t(sk(section, 'add.title'))}</button>
       </div>
     </div>
   )
@@ -92,7 +95,7 @@ export function ListScreen({ status, onAdd }: { status: Status; onAdd: () => voi
             ))}
           </div>
           <select value={sort} onChange={e => setSort(e.target.value as Sort)} aria-label={t('list.sort')}>
-            {(['rating', 'recent', 'title', 'year'] as Sort[]).map(s => <option key={s} value={s}>{t('sort.' + s)}</option>)}
+            {(['rating', 'recent', 'title', 'year'] as Sort[]).map(s => <option key={s} value={s}>{t(sk(section, 'sort.' + s))}</option>)}
           </select>
         </div>
       )}

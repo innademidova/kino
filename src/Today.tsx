@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react'
 import { t } from './i18n'
-import { KIND_EMOJI, LENGTHS, MOODS, MOOD_EMOJI, moodsOf, type Item, type Kind, type Length } from './lib'
+import { KIND_EMOJI, LENGTHS, MOODS, MOOD_EMOJI, moodsOf, sectionOf, sk, type Item, type Kind, type Length, type Section } from './lib'
 import { useStore } from './store'
 import { Icon } from './ui'
 import { genresIn, ItemCard } from './Lists'
 
 // "What to watch today": filters over "Want" + "Watching", and a random pick
-export function Today() {
+export function Today({ section }: { section: Section }) {
   const { items } = useStore()
-  const pool = items.filter(x => x.status !== 'watched')
+  const pool = items.filter(x => x.status !== 'watched' && sectionOf(x) === section)
   const [kind, setKind] = useState<Kind | null>(null)
   const [genres, setGenres] = useState<string[]>([])
   const [length, setLength] = useState<Length | null>(null)
@@ -28,7 +28,7 @@ export function Today() {
   }
   const any = kind || genres.length || length || moods.length
 
-  if (!pool.length) return <div className="content"><p className="empty">{t('today.empty')}</p></div>
+  if (!pool.length) return <div className="content"><p className="empty">{t(sk(section, 'today.empty'))}</p></div>
 
   return (
     <div className="content today">
@@ -38,10 +38,10 @@ export function Today() {
             {MOODS.map(m => <button key={m} className={`chip ${moods.includes(m) ? 'on' : ''}`} onClick={() => setMoods(flip(moods, m))}>{MOOD_EMOJI[m]} {t('mood.' + m)}</button>)}
           </div>
         </div>
-        <div className="field"><span>{t('today.what')}</span>
+        <div className="field"><span>{t(sk(section, 'today.what'))}</span>
           <div className="chips wrap">
-            {(['film', 'series'] as Kind[]).map(k => <button key={k} className={`chip ${kind === k ? 'on' : ''}`} onClick={() => setKind(kind === k ? null : k)}>{KIND_EMOJI[k]} {t('kind.' + k)}</button>)}
-            {LENGTHS.map(l => <button key={l} className={`chip ${length === l ? 'on' : ''}`} onClick={() => setLength(length === l ? null : l)}>{t('length.any.' + l)}</button>)}
+            {section === 'kino' && (['film', 'series'] as Kind[]).map(k => <button key={k} className={`chip ${kind === k ? 'on' : ''}`} onClick={() => setKind(kind === k ? null : k)}>{KIND_EMOJI[k]} {t('kind.' + k)}</button>)}
+            {LENGTHS.map(l => <button key={l} className={`chip ${length === l ? 'on' : ''}`} onClick={() => setLength(length === l ? null : l)}>{t(sk(section, 'length.any.' + l))}</button>)}
           </div>
         </div>
         {genresIn(pool).length > 0 && (
@@ -59,7 +59,7 @@ export function Today() {
 
       {pick && shown.some(x => x.id === pick.id) && (
         <div className="pick">
-          <h3 className="section-title">🎲 {t('today.picked')}</h3>
+          <h3 className="section-title">🎲 {t(sk(section, 'today.picked'))}</h3>
           <div className="pick-card"><ItemCard item={pick} /></div>
         </div>
       )}

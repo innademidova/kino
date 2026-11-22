@@ -1,7 +1,7 @@
-# My movies (Kino): project context for Claude
+# My movies & books (Kino): project context for Claude
 
-A personal PWA for one user (the owner, not a developer): films and series she wants to watch, is watching and has
-watched, so recommendations from reels, friends and memory stop getting lost, and she can quickly pick something for
+A personal PWA for one user (the owner, not a developer): films and series (and, since 2026-11-22, books) she wants to
+watch/read, is watching/reading and has finished, so recommendations from reels, friends and memory stop getting lost, and she can quickly pick something for
 tonight. Claude does all technical work; the owner writes in Russian/Ukrainian and decides on features and design.
 
 Local: `~/projects/kino`. Live: https://innademidova.github.io/kino/. Sister projects with the same stack:
@@ -30,10 +30,16 @@ without use: if `scripts/sql.mjs` says "Database is possibly not accessible", re
   where_to_watch, source (who recommended / where from), url, note, poster_url (Wikimedia image link), photos[]
   (her screenshots, storage paths), rating **1–10**, impression, watched_on, length `short|medium|long`, runtime (min),
   moods[] (`light|cry|think|scary`; empty = guessed from genres by `moodsOf`), wikidata (Q-id), wiki_url.
+- Books are rows with kind `book` plus author, series, series_no, pages, ol_key (Open Library work key). The app has two
+  sections (switch in the header, remembered per device): 🎬 Кіно and 📚 Книги; the same statuses get book labels
+  (`sk(section, key)` reads `book.<key>` from the locales for books). Ukrainian book titles are kept as she gives them;
+  the cover usually comes from the original edition.
 - Storage bucket `watch` (private, signed URLs): `<uid>/<uuid>.webp` + thumbnail `<uuid>_t.webp`.
 - Her user id: `7b26ed3f-e90a-47cd-ba1d-fd7ff640f2f6` (for inserting films from chat).
 
-## Posters and details: `src/wiki.ts` (Wikidata + Wikipedia, no key)
+## Posters and details: `src/wiki.ts` (Wikidata + Wikipedia, no key), `src/books.ts` (Open Library, no key)
+
+Google Books' keyless quota is shared and was exhausted on 2026-11-22, so books use Open Library.
 
 She asked for automatic covers. TMDB was offered (needs her account + key); Wikidata was chosen as the free no-signup
 option. `searchTitles` = Wikidata prefix search (uk + en) + full-text search limited to film/series types; `findByUrl`
@@ -43,9 +49,11 @@ User-Agent, go one film at a time with pauses; `api()` retries with Retry-After.
 
 ## Owner's way of using it
 
-She sends film names in chat ("додай X в хочу подивитись"); Claude adds them: look up with `byId`/`searchTitles` from a
-node script (`node --experimental-strip-types` importing `src/wiki.ts`, with `globalThis.fetch` wrapped to send a
-User-Agent) and insert with SQL using her user id, or she adds them herself in the app.
+She sends titles in chat, often many in a row, in Russian/Ukrainian/English ("X посмотреть", "почитать Y", "Z — смотрела,
+10 из 10"). No verb = want to watch. Claude adds them with `scripts/add.mts` (spec format in its header: films/series by
+Wikidata search or exact Q-id, `"dry": true` to see candidates first, books with `"book": true` via Open Library).
+Russian titles: search Wikidata with `language=ru` to find the Q-id. Check ambiguous ones (same title, several years)
+with a dry run and tell her which one was picked.
 She does NOT want a "recommend to friends" section (dropped 2026-11-22); "Watched" with rating sort/filter replaces it.
 
 ## Code

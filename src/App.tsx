@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { t, lang, LANGUAGES, remember } from './i18n'
-import { supabase, type Status } from './lib'
+import { sectionOf, sk, supabase, type Section, type Status } from './lib'
 import { StoreProvider, useStore } from './store'
 import { Icon, Sheet, useHash } from './ui'
 import { ListScreen } from './Lists'
@@ -56,8 +56,15 @@ const TABS: { id: string; hash: string; icon: string; status?: Status }[] = [
   { id: 'today', hash: '#/today', icon: 'dice' },
 ]
 
+// Films or books: remembered on this device
+function loadSection(): Section {
+  try { return localStorage.getItem('section') === 'books' ? 'books' : 'kino' } catch { return 'kino' }
+}
+
 function Routes() {
   const hash = useHash()
+  const [section, setSectionState] = useState<Section>(loadSection)
+  const setSection = (s: Section) => { setSectionState(s); try { localStorage.setItem('section', s) } catch { /* private mode */ } }
   const { items, loading, error } = useStore()
   const [adding, setAdding] = useState(false)
   const [settings, setSettings] = useState(false)
@@ -83,24 +90,29 @@ function Routes() {
     <div className="page with-nav">
       <header className="top home-top">
         <div className="grow">
-          <h1>{t('tab.' + tab.id)}</h1>
+          <h1>{t(sk(section, 'tab.' + tab.id))}</h1>
           <p className="muted small">{t('app.name')}</p>
+        </div>
+        <div className="segmented section-switch">
+          {(['kino', 'books'] as Section[]).map(s => (
+            <button key={s} className={s === section ? 'on' : ''} onClick={() => setSection(s)}>{t('section.' + s)}</button>
+          ))}
         </div>
         <button className="round" onClick={() => setSettings(true)} aria-label={t('settings.title')}><Icon name="settings" /></button>
       </header>
       {error && <p className="error content">{error}</p>}
-      {tab.status ? <ListScreen key={tab.id} status={tab.status} onAdd={() => setAdding(true)} /> : <Today />}
-      <button className="fab" onClick={() => setAdding(true)} aria-label={t('add.title')}><Icon name="plus" size={26} /></button>
+      {tab.status ? <ListScreen key={tab.id + section} section={section} status={tab.status} onAdd={() => setAdding(true)} /> : <Today key={section} section={section} />}
+      <button className="fab" onClick={() => setAdding(true)} aria-label={t(sk(section, 'add.title'))}><Icon name="plus" size={26} /></button>
       <nav className="tabbar">
         {TABS.map(x => (
           <a key={x.id} href={x.hash} className={x.id === tab.id ? 'on' : ''}>
             <Icon name={x.icon} size={22} />
-            <span>{t('tab.' + x.id)}</span>
-            {x.status && <span className="tab-count">{items.filter(i => i.status === x.status).length || ''}</span>}
+            <span>{t(sk(section, 'tab.' + x.id))}</span>
+            {x.status && <span className="tab-count">{items.filter(i => i.status === x.status && sectionOf(i) === section).length || ''}</span>}
           </a>
         ))}
       </nav>
-      {adding && <QuickAdd status={tab.status ?? 'want'} onClose={() => setAdding(false)} />}
+      {adding && <QuickAdd status={tab.status ?? 'want'} section={section} onClose={() => setAdding(false)} />}
       {settings && <Settings onClose={() => setSettings(false)} />}
     </div>
   )
