@@ -17,7 +17,7 @@ export function ItemPage({ item }: { item: Item }) {
   const save = (patch: Partial<Item>) => updateItem(item.id, patch).catch(e => setError((e as Error).message))
   const back = () => (history.length > 1 ? history.back() : go(item.status === 'want' ? '#/' : '#/' + item.status))
   const place = seriesPlace(items, item)
-  const seriesLine = item.series && place ? `${item.series}${place.n ? ' · ' + t('item.bookOf', { n: place.n, total: place.total }) : ''}` : ''
+  const seriesLine = item.series && place ? `${item.series}${place.n ? ' · ' + (place.total ? t('item.bookOf', { n: place.n, total: place.total }) : t('item.bookNo', { n: place.n })) : ''}` : ''
   const mood = moodsOf(item)
   const untitled = item.title === t('item.untitled')
   const section = sectionOf(item)

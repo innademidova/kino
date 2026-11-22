@@ -9,7 +9,23 @@ export function seriesPlace(items: Item[], item: Item) {
   const all = seriesBooks(items, item)
   if (!all.length) return null
   const total = Math.max(all.length, ...all.map(x => x.series_no ?? 0))
-  return { all, total, n: item.series_no }
+  // Only her one book of a series: the real total is unknown, so no "of N"
+  return { all, total: all.length > 1 ? total : null, n: item.series_no }
+}
+
+// A series stays together, in reading order, where its first book would be
+function keepSeriesTogether(list: Item[]) {
+  const key = (x: Item) => x.kind === 'book' && x.series ? x.series.trim().toLowerCase() : null
+  const done = new Set<string>()
+  const out: Item[] = []
+  for (const x of list) {
+    const k = key(x)
+    if (!k) { out.push(x); continue }
+    if (done.has(k)) continue
+    done.add(k)
+    out.push(...list.filter(y => key(y) === k).sort((a, b) => (a.series_no ?? 99) - (b.series_no ?? 99)))
+  }
+  return out
 }
 
 export function ItemCard({ item }: { item: Item }) {
@@ -18,7 +34,7 @@ export function ItemCard({ item }: { item: Item }) {
   return (
     <a className="film-card" href={`#/i/${item.id}`}>
       <Poster item={item}>
-        {place && <span className="series-pill pill glass">📚 {place.n ? `${place.n}/${place.total}` : place.total}</span>}
+        {place && place.n && <span className="series-pill pill glass">📚 {place.total ? `${place.n}/${place.total}` : `#${place.n}`}</span>}
         <span className="cover-pills">
           {item.favorite && <span className="pill glass">❤️</span>}
           {item.rewatch && item.status !== 'watched' && <span className="pill glass">🔁</span>}
@@ -27,7 +43,7 @@ export function ItemCard({ item }: { item: Item }) {
       </Poster>
       <div className="film-card-body">
         <b>{item.title}</b>
-        {place && <span className="series-line small">📚 {item.series}{place.n ? ` · ${t('item.bookOf', { n: place.n, total: place.total })}` : ''}</span>}
+        {place && <span className="series-line small">📚 {item.series}</span>}
         <span className="muted small">{(item.kind === 'book'
           ? [item.author]
           : [item.year, KIND_EMOJI[item.kind] + ' ' + t('kind.' + item.kind), item.where_to_watch]).filter(Boolean).join(' · ')}</span>
@@ -69,8 +85,9 @@ export function ListScreen({ status, section, onAdd }: { status: Status; section
       title: (a, b) => (a.series ?? a.title).localeCompare(b.series ?? b.title) || (a.series_no ?? 0) - (b.series_no ?? 0) || a.title.localeCompare(b.title),
       year: (a, b) => (b.year ?? 0) - (a.year ?? 0),
     }
-    return list.sort(by[sort])
-  }, [mine, query, genre, kind, minRating, fav, sort, watched])
+    const sorted = list.sort(by[sort])
+    return section === 'books' && sort !== 'rating' ? keepSeriesTogether(sorted) : sorted
+  }, [mine, query, genre, kind, minRating, fav, sort, watched, section])
 
   if (mine.length === 0) return (
     <div className="content">
