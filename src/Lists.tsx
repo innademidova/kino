@@ -1,0 +1,104 @@
+import { useMemo, useState } from 'react'
+import { t } from './i18n'
+import { GENRES, KIND_EMOJI, type Item, type Kind, type Status } from './lib'
+import { useStore } from './store'
+import { Icon, Poster } from './ui'
+
+export function ItemCard({ item }: { item: Item }) {
+  return (
+    <a className="film-card" href={`#/i/${item.id}`}>
+      <Poster item={item}>
+        <span className="cover-pills">
+          {item.favorite && <span className="pill glass">❤️</span>}
+          {item.rewatch && item.status !== 'watched' && <span className="pill glass">🔁</span>}
+          {item.rating != null && <span className="pill glass star">★ {item.rating}</span>}
+        </span>
+      </Poster>
+      <div className="film-card-body">
+        <b>{item.title}</b>
+        <span className="muted small">{[item.year, KIND_EMOJI[item.kind] + ' ' + t('kind.' + item.kind), item.where_to_watch].filter(Boolean).join(' · ')}</span>
+      </div>
+    </a>
+  )
+}
+
+type Sort = 'rating' | 'recent' | 'title' | 'year'
+
+// Genres that are used in a list, most used first
+export function genresIn(items: Item[]) {
+  const n = new Map<string, number>()
+  for (const i of items) for (const g of i.genres) n.set(g, (n.get(g) ?? 0) + 1)
+  return GENRES.filter(g => n.has(g)).sort((a, b) => n.get(b)! - n.get(a)!)
+}
+
+export function ListScreen({ status, onAdd }: { status: Status; onAdd: () => void }) {
+  const { items } = useStore()
+  const mine = items.filter(x => x.status === status)
+  const [query, setQuery] = useState('')
+  const [genre, setGenre] = useState<string | null>(null)
+  const [kind, setKind] = useState<Kind | null>(null)
+  const [minRating, setMinRating] = useState(0)
+  const [fav, setFav] = useState(false)
+  const [sort, setSort] = useState<Sort>(status === 'watched' ? 'rating' : 'recent')
+  const watched = status === 'watched'
+
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    const list = mine.filter(x =>
+      (!q || [x.title, x.original_title, x.note, x.source].some(s => s?.toLowerCase().includes(q))) &&
+      (!genre || x.genres.includes(genre)) && (!kind || x.kind === kind) &&
+      (!minRating || (x.rating ?? 0) >= minRating) && (!fav || x.favorite))
+    const by: Record<Sort, (a: Item, b: Item) => number> = {
+      rating: (a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.watched_on ?? '').localeCompare(a.watched_on ?? ''),
+      recent: (a, b) => watched ? (b.watched_on ?? b.updated_at).localeCompare(a.watched_on ?? a.updated_at) : b.created_at.localeCompare(a.created_at),
+      title: (a, b) => a.title.localeCompare(b.title),
+      year: (a, b) => (b.year ?? 0) - (a.year ?? 0),
+    }
+    return list.sort(by[sort])
+  }, [mine, query, genre, kind, minRating, fav, sort, watched])
+
+  if (mine.length === 0) return (
+    <div className="content">
+      <div className="empty-big">
+        <div className="empty-mark">{status === 'want' ? '🍿' : status === 'watching' ? '📺' : '🎞️'}</div>
+        <p>{t('list.empty.' + status)}</p>
+        <button className="btn primary" onClick={onAdd}><Icon name="plus" size={18} />{t('add.title')}</button>
+      </div>
+    </div>
+  )
+
+  const genres = genresIn(mine)
+  return (
+    <div className="content">
+      {mine.length > 6 && (
+        <label className="search"><Icon name="search" size={18} />
+          <input type="search" value={query} placeholder={t('list.search')} onChange={e => setQuery(e.target.value)} />
+        </label>
+      )}
+      <div className="chips">
+        {watched && <button className={`chip ${fav ? 'on' : ''}`} onClick={() => setFav(!fav)}>❤️ {t('item.favorite')}</button>}
+        {(['film', 'series'] as Kind[]).filter(k => mine.some(x => x.kind === k)).length > 1 && (['film', 'series'] as Kind[]).map(k => (
+          <button key={k} className={`chip ${kind === k ? 'on' : ''}`} onClick={() => setKind(kind === k ? null : k)}>{KIND_EMOJI[k]} {t('kinds.' + k)}</button>
+        ))}
+        {genres.map(g => (
+          <button key={g} className={`chip ${genre === g ? 'on' : ''}`} onClick={() => setGenre(genre === g ? null : g)}>{t('genre.' + g)}</button>
+        ))}
+      </div>
+      {watched && (
+        <div className="list-tools">
+          <div className="chips">
+            {[0, 10, 9, 8, 7].map(n => (
+              <button key={n} className={`chip ${minRating === n ? 'on' : ''}`} onClick={() => setMinRating(n)}>{n ? (n === 10 ? '★ 10' : `★ ${n}+`) : t('list.allRatings')}</button>
+            ))}
+          </div>
+          <select value={sort} onChange={e => setSort(e.target.value as Sort)} aria-label={t('list.sort')}>
+            {(['rating', 'recent', 'title', 'year'] as Sort[]).map(s => <option key={s} value={s}>{t('sort.' + s)}</option>)}
+          </select>
+        </div>
+      )}
+      {shown.length === 0
+        ? <p className="empty">{t('list.nothing')}</p>
+        : <div className="film-grid">{shown.map(x => <ItemCard key={x.id} item={x} />)}</div>}
+    </div>
+  )
+}

@@ -1,0 +1,168 @@
+{
+  "app": {
+    "name": "My movies"
+  },
+  "languages": {
+    "uk": "Українська",
+    "en": "English"
+  },
+  "login": {
+    "text": "Sign in with the same account as the perfume diary.",
+    "email": "Email",
+    "password": "Password",
+    "go": "Sign in",
+    "failed": "Wrong email or password"
+  },
+  "common": {
+    "uploading": "Uploading…",
+    "close": "Close",
+    "confirmDelete": "Tap again to delete",
+    "delete": "Delete",
+    "save": "Save",
+    "back": "Back",
+    "notFound": "Not found. Maybe it was deleted."
+  },
+  "photos": {
+    "add": "Add a screenshot or photo"
+  },
+  "error": {
+    "photo": "Could not read the photo",
+    "signIn": "Please sign in again"
+  },
+  "link": {
+    "web": "Link",
+    "wiki": "Wikipedia"
+  },
+  "tab": {
+    "want": "Want to watch",
+    "watching": "Watching",
+    "watched": "Watched",
+    "today": "Tonight?"
+  },
+  "list": {
+    "empty": {
+      "want": "Everything you want to watch goes here. Add your first film or series.",
+      "watching": "Series you are watching right now.",
+      "watched": "Everything you have watched, with your ratings."
+    },
+    "search": "Search",
+    "allRatings": "All ratings",
+    "sort": "Sort",
+    "nothing": "Nothing matches these filters"
+  },
+  "sort": {
+    "rating": "Highest rated first",
+    "recent": "Most recent first",
+    "title": "By title",
+    "year": "Newest films first"
+  },
+  "kind": {
+    "film": "film",
+    "series": "series"
+  },
+  "kinds": {
+    "film": "Films",
+    "series": "Series"
+  },
+  "genre": {
+    "drama": "drama",
+    "comedy": "comedy",
+    "romance": "romance",
+    "scifi": "sci-fi",
+    "thriller": "thriller",
+    "horror": "horror",
+    "crime": "crime",
+    "mystery": "mystery",
+    "fantasy": "fantasy",
+    "adventure": "adventure",
+    "action": "action",
+    "animation": "animation",
+    "family": "family",
+    "history": "history",
+    "war": "war",
+    "documentary": "documentary",
+    "musical": "musical"
+  },
+  "mood": {
+    "light": "light",
+    "cry": "a good cry",
+    "think": "food for thought",
+    "scary": "scary"
+  },
+  "length": {
+    "film": {
+      "short": "under 1.5 h",
+      "medium": "1.5–2.5 h",
+      "long": "long"
+    },
+    "series": {
+      "short": "mini / 1 season",
+      "medium": "2–3 seasons",
+      "long": "many seasons"
+    },
+    "any": {
+      "short": "short",
+      "medium": "medium",
+      "long": "long"
+    }
+  },
+  "item": {
+    "favorite": "Favourite",
+    "untitled": "Untitled",
+    "titlePlaceholder": "Title",
+    "impressionPlaceholder": "A few words about it",
+    "watchedOn": "Watched on",
+    "kind": "What is it",
+    "length": "Length",
+    "mood": "Mood",
+    "moodGuessed": "guessed from genres, change it if you like",
+    "genres": "Genres",
+    "year": "Year",
+    "where": "Where to watch",
+    "source": "Who recommended it or where from",
+    "sourcePlaceholder": "A reel, a friend…",
+    "url": "Link",
+    "note": "Note",
+    "rewatch": "Seen it, want to rewatch",
+    "photos": "Screenshots and photos",
+    "removePoster": "Remove poster (show my screenshot)",
+    "added": "Added {{date}}",
+    "hm": "{{h}} h {{m}} min",
+    "m": "{{m}} min"
+  },
+  "add": {
+    "title": "Add",
+    "placeholder": "Title or link",
+    "searching": "Searching Wikipedia…",
+    "offline": "Search failed. You can save it as is.",
+    "screenshot": "Screenshot",
+    "saveAsIs": "Save as is",
+    "pickHint": "Tap the right film and its poster, year and genres fill in by themselves."
+  },
+  "lookup": {
+    "title": "Find on Wikipedia",
+    "none": "Nothing found. Try the English title.",
+    "hint": "Fills in the poster, year, genres and length. Your notes and rating stay.",
+    "again": "Different poster / data",
+    "button": "Find poster and details"
+  },
+  "today": {
+    "empty": "Add something to “Want to watch” first.",
+    "mood": "What mood?",
+    "what": "What and how long",
+    "random": "Random pick",
+    "again": "Again",
+    "reset": "Reset",
+    "picked": "Tonight we watch",
+    "matches_one": "{{count}} match",
+    "matches_other": "{{count}} matches",
+    "none": "Nothing matches. Remove a filter."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "install": "To add it to your phone's home screen: in Safari tap Share → Add to Home Screen.",
+    "posters": "Posters, years and genres come from Wikipedia (free).",
+    "signOut": "Sign out"
+  }
+}
