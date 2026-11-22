@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { t } from './i18n'
 import {
-  formatRuntime, GENRES, KIND_EMOJI, LENGTHS, lengthLabel, MOODS, MOOD_EMOJI, moodsOf, SERVICES, STATUSES, todayISO, type Item,
+  formatDate, formatRuntime, GENRES, KIND_EMOJI, LENGTHS, lengthLabel, MOODS, MOOD_EMOJI, moodsOf, SERVICES, STATUSES, todayISO, type Item,
 } from './lib'
 import { useStore } from './store'
 import { AutoField, ConfirmDelete, Icon, LinkChip, PhotoGrid, Poster, Segmented, Stars, go } from './ui'
@@ -118,7 +118,7 @@ export function ItemPage({ item }: { item: Item }) {
         </div>
 
         <div className="form-foot">
-          <span className="muted small">{t('item.added', { date: new Date(item.created_at).toLocaleDateString() })}</span>
+          <span className="muted small">{t('item.added', { date: formatDate(item.created_at.slice(0, 10)) })}</span>
           <ConfirmDelete onConfirm={async () => { await deleteItem(item.id); back() }} />
         </div>
       </div>

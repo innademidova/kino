@@ -197,14 +197,19 @@ export function gradientFor(seed: string) {
 }
 
 
-// Moods guessed from genres, used until she picks moods herself
+// Moods guessed from genres, used until she picks moods herself (kept narrow: a sci-fi thriller is not "scary")
 const MOOD_FROM_GENRE: Record<string, string> = {
-  comedy: 'light', family: 'light', animation: 'light', musical: 'light', adventure: 'light',
+  comedy: 'light', family: 'light', animation: 'light', musical: 'light',
   drama: 'cry', romance: 'cry', war: 'cry',
-  scifi: 'think', mystery: 'think', documentary: 'think', history: 'think', crime: 'think',
-  horror: 'scary', thriller: 'scary',
+  scifi: 'think', mystery: 'think', documentary: 'think', history: 'think',
+  horror: 'scary',
 }
 export function moodsOf(item: Pick<Item, 'moods' | 'genres'>) {
   if (item.moods.length) return { moods: item.moods, guessed: false }
-  return { moods: [...new Set(item.genres.map(g => MOOD_FROM_GENRE[g]).filter(Boolean))], guessed: true }
+  const g = item.genres
+  const out = new Set(g.map(x => MOOD_FROM_GENRE[x]).filter(Boolean))
+  if (g.includes('thriller') && !g.includes('scifi') && !g.includes('drama')) out.add('scary')
+  // A comedy-drama is light, not tearful
+  if (out.has('light') && g.includes('comedy')) out.delete('cry')
+  return { moods: [...out], guessed: true }
 }
