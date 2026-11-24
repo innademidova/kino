@@ -36,7 +36,6 @@ function Login() {
     <form className="login" onSubmit={submit}>
       <div className="login-mark">🎬</div>
       <h1>{t('app.name')}</h1>
-      <p className="muted">{t('login.text')}</p>
       <input type="email" autoComplete="email" placeholder={t('login.email')} value={email} onChange={e => setEmail(e.target.value)} />
       <input type="password" autoComplete="current-password" placeholder={t('login.password')} value={password} onChange={e => setPassword(e.target.value)} />
       {error && <p className="error">{error}</p>}
