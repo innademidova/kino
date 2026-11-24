@@ -10,7 +10,9 @@
     "email": "Email",
     "password": "Password",
     "go": "Sign in",
-    "failed": "Wrong email or password"
+    "failed": "Wrong email or password",
+    "show": "Show password",
+    "hide": "Hide password"
   },
   "common": {
     "uploading": "Uploading…",

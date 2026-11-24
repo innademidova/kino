@@ -24,6 +24,7 @@ export default function App() {
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [shown, setShown] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   async function submit(e: React.FormEvent) {
@@ -37,7 +38,10 @@ function Login() {
       <div className="login-mark">🎬</div>
       <h1>{t('app.name')}</h1>
       <input type="email" autoComplete="email" placeholder={t('login.email')} value={email} onChange={e => setEmail(e.target.value)} />
-      <input type="password" autoComplete="current-password" placeholder={t('login.password')} value={password} onChange={e => setPassword(e.target.value)} />
+      <div className="password">
+        <input type={shown ? 'text' : 'password'} autoComplete="current-password" placeholder={t('login.password')} value={password} onChange={e => setPassword(e.target.value)} />
+        <button type="button" onClick={() => setShown(!shown)} aria-label={t(shown ? 'login.hide' : 'login.show')}><Icon name={shown ? 'eyeOff' : 'eye'} size={20} /></button>
+      </div>
       {error && <p className="error">{error}</p>}
       <button className="btn primary wide" disabled={busy}>{t('login.go')}</button>
     </form>
